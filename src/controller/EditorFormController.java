@@ -7,7 +7,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,6 +62,22 @@ public class EditorFormController {
     }
 
     public void mnuOpen_OnAction(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open File");
+        File file = fileChooser.showOpenDialog(txtEditor.getScene().getWindow());
+
+        if (file == null) return;
+
+        txtEditor.clear();
+        try (FileReader fr = new FileReader(file);
+             BufferedReader br = new BufferedReader(fr)) {
+            String line = null;
+            while ((line = br.readLine()) != null){
+                txtEditor.appendText(line + '\n');
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public void mnuSave_OnAction(ActionEvent actionEvent) {
