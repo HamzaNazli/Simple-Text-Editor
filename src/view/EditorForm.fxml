@@ -45,13 +45,13 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TextArea layoutX="14.0" layoutY="36.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0" />
+      <TextArea fx:id="txtEditor" layoutX="14.0" layoutY="36.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0" />
       <ToolBar layoutY="360.0" prefHeight="25.0" prefWidth="200.0" style="-fx-background-color: aqua;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
       <AnchorPane fx:id="pneFindOrReplace" layoutX="10.0" layoutY="200.0" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: grey;" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <TextField fx:id="txtSearch" layoutX="57.0" layoutY="5.0" />
-            <Button fx:id="btnFindNext" layoutX="228.0" layoutY="5.0" mnemonicParsing="false" text="↧" />
-            <Button fx:id="btnFindPrevious"  layoutX="257.0" layoutY="5.0" mnemonicParsing="false" text="↥" />
+            <Button fx:id="btnFindNext" layoutX="228.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnFindNext_OnAction" text="↧" />
+            <Button fx:id="btnFindPrevious" layoutX="257.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnFindPrevious_OnAction" text="↥" />
             <Label fx:id="lblFind" layoutX="14.0" layoutY="10.0" text="Find">
                <font>
                   <Font name="System Bold" size="14.0" />
@@ -63,8 +63,8 @@
                  </font>
              </Label>
             <TextField fx:id="txtReplace" layoutX="353.0" layoutY="5.0" />
-            <Button fx:id="btnReplace" layoutX="524.0" layoutY="5.0" mnemonicParsing="false" text="R" />
-            <Button fx:id="btnReplaceAll"  layoutX="553.0" layoutY="5.0" mnemonicParsing="false" text="RA" />
+            <Button fx:id="btnReplace" layoutX="524.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnReplace_OnAction" text="R" />
+            <Button fx:id="btnReplaceAll" layoutX="553.0" layoutY="5.0" mnemonicParsing="false" onAction="#btnReplaceAll_OnAction" text="RA" />
          </children>
       </AnchorPane>
    </children>
