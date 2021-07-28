@@ -9,10 +9,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -32,6 +29,7 @@ public class EditorFormController {
     public TextArea txtEditor;
     private int findOffSet = -1;
     private List<Index> searchList = new ArrayList<>();
+    private String address = null;
 
     public void initialize(){
         pneFindOrReplace.setVisible(false);
@@ -69,6 +67,8 @@ public class EditorFormController {
         if (file == null) return;
 
         txtEditor.clear();
+
+        address = file.getAbsolutePath();
         try (FileReader fr = new FileReader(file);
              BufferedReader br = new BufferedReader(fr)) {
             String line = null;
@@ -81,9 +81,29 @@ public class EditorFormController {
     }
 
     public void mnuSave_OnAction(ActionEvent actionEvent) {
+
     }
 
     public void mnuSaveAs_OnAction(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File As");
+        File file = fileChooser.showSaveDialog(txtEditor.getScene().getWindow());
+
+
+        if(address == null){
+            System.out.println("Null .....");
+        }else{
+            System.out.println(address);
+        }
+
+        if (file == null) return;
+
+        try (FileWriter fw = new FileWriter(file);
+             BufferedWriter bw = new BufferedWriter(fw)) {
+            bw.write(txtEditor.getText());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public void mnuExit_OnAction(ActionEvent actionEvent) {
