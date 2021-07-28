@@ -57,6 +57,7 @@ public class EditorFormController {
     public void mnuNew_OnAction(ActionEvent actionEvent) {
         txtEditor.clear();
         txtEditor.requestFocus();
+        address = null;
     }
 
     public void mnuOpen_OnAction(ActionEvent actionEvent) {
@@ -81,7 +82,17 @@ public class EditorFormController {
     }
 
     public void mnuSave_OnAction(ActionEvent actionEvent) {
+        if (address != null){
+            try (FileWriter fw = new FileWriter(address);
+                 BufferedWriter bw = new BufferedWriter(fw)) {
 
+                bw.write(txtEditor.getText());
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }else{
+            mnuSaveAs_OnAction(actionEvent);
+        }
     }
 
     public void mnuSaveAs_OnAction(ActionEvent actionEvent) {
@@ -90,11 +101,11 @@ public class EditorFormController {
         File file = fileChooser.showSaveDialog(txtEditor.getScene().getWindow());
 
 
-        if(address == null){
-            System.out.println("Null .....");
-        }else{
-            System.out.println(address);
-        }
+//        if(address == null){
+//            System.out.println("Null .....");
+//        }else{
+//            System.out.println(address);
+//        }
 
         if (file == null) return;
 
