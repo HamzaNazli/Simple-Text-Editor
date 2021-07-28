@@ -151,12 +151,15 @@ public class EditorFormController {
     }
 
     public void mnuCut_OnAction(ActionEvent actionEvent) {
+        txtEditor.cut();
     }
 
     public void mnuCopy_OnAction(ActionEvent actionEvent) {
+        txtEditor.copy();
     }
 
     public void mnuPaste_OnAction(ActionEvent actionEvent) {
+        txtEditor.paste();
     }
 
     public void mnuFind_OnAction(ActionEvent actionEvent) {
