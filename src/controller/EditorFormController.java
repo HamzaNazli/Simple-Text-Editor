@@ -8,10 +8,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,9 +74,11 @@ public class EditorFormController {
         address = file.getAbsolutePath();
         try (FileReader fr = new FileReader(file);
              BufferedReader br = new BufferedReader(fr)) {
+
             String line = null;
+
             while ((line = br.readLine()) != null){
-                txtEditor.appendText(line + '\n');
+              txtEditor.appendText(line + '\n');
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -118,6 +122,32 @@ public class EditorFormController {
     }
 
     public void mnuExit_OnAction(ActionEvent actionEvent) {
+//        StringBuilder sb = new StringBuilder();
+//        if (address != null) {
+//            try (FileReader fr = new FileReader(address);
+//                 BufferedReader br = new BufferedReader(fr)) {
+//
+//                String line = null;
+//                while ((line = br.readLine()) != null) {
+//                    sb.append(line + '\n');
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//            if (sb.toString() != txtEditor.getText()){
+//
+//            }
+        if (txtEditor.getText() != null){
+            Alert exitAlert = new Alert(Alert.AlertType.NONE, "Do you want to Save?", ButtonType.YES, ButtonType.NO);
+            ButtonType buttonType = exitAlert.showAndWait().orElse(ButtonType.YES);
+            if (ButtonType.YES.equals(buttonType)){
+                mnuSave_OnAction(actionEvent);
+            }
+        }
+        ((Stage)txtEditor.getScene().getWindow()).close();
+
     }
 
     public void mnuCut_OnAction(ActionEvent actionEvent) {
