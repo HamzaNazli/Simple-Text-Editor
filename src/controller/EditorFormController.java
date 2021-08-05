@@ -44,10 +44,17 @@ public class EditorFormController {
             while (matcher.find()){
                 searchList.add(new Index(matcher.start(), matcher.end()));
             }
+
+            for (Index index : searchList){
+                if (index.indexStart > txtEditor.getCaretPosition()){
+                    findOffSet = searchList.indexOf(index);
+                    break;
+                }
+            }
+
         };
 
         txtSearch.textProperty().addListener(listener);
-
 
         pneRoot.addEventHandler(KeyEvent.KEY_PRESSED,keyEvent -> {
             if (KeyCode.ESCAPE == keyEvent.getCode()){
@@ -164,7 +171,7 @@ public class EditorFormController {
 
     public void mnuFind_OnAction(ActionEvent actionEvent) {
         txtSearch.clear();
-        findOffSet = -1;
+//        findOffSet = -1;
         pneFindOrReplace.setVisible(true);
         makeReplaceVisible(false);
         txtSearch.requestFocus();
@@ -172,7 +179,7 @@ public class EditorFormController {
 
     public void mnuReplace_OnAction(ActionEvent actionEvent) {
         txtReplace.clear();
-        findOffSet = -1;
+//        findOffSet = -1;
         if (pneFindOrReplace.isVisible()){
            makeReplaceVisible(true);
         }
@@ -195,15 +202,9 @@ public class EditorFormController {
     }
 
     public void btnFindNext_OnAction(ActionEvent actionEvent) {
-//        int currentIndex = txtEditor.getSelection().getStart();
-//        System.out.println(currentIndex);
         if (!searchList.isEmpty()){
             findOffSet++;
-//            int count=0;
-//            while ((searchList.get(count).indexStart)>currentIndex){
-//                findOffSet = count;
-//                count++;
-//            }
+
             if (findOffSet >= searchList.size()) {
                 findOffSet = 0;
             }
