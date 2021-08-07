@@ -1,5 +1,7 @@
 package controller;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -9,8 +11,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,28 +33,20 @@ public class EditorFormController {
     public Button btnReplaceAll;
     public AnchorPane pneRoot;
     public TextArea txtEditor;
+    public Tooltip tltpFindNext;
+    public Tooltip tltpFindPrevious;
+    public Tooltip tltpReplaceNext;
+    public Tooltip tltpReplaceAll;
     private int findOffSet = -1;
     private List<Index> searchList = new ArrayList<>();
     private String address = null;
+//    Tooltip tooltip;
 
     public void initialize(){
         pneFindOrReplace.setVisible(false);
 
         ChangeListener listener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
-            Pattern regEx = Pattern.compile(newValue);
-            Matcher matcher = regEx.matcher(txtEditor.getText());
-
-            searchList.clear();
-            while (matcher.find()){
-                searchList.add(new Index(matcher.start(), matcher.end()));
-            }
-
-            for (Index index : searchList){
-                if (index.indexStart > txtEditor.getCaretPosition()){
-                    findOffSet = searchList.indexOf(index);
-                    break;
-                }
-            }
+           searchMatches(newValue);
 
         };
 
@@ -61,6 +57,48 @@ public class EditorFormController {
                 pneFindOrReplace.setVisible(false);
             }
         });
+        tooltipStartTiming(tltpFindNext);
+        tooltipStartTiming(tltpFindPrevious);
+        tooltipStartTiming(tltpReplaceNext);
+        tooltipStartTiming(tltpReplaceAll);
+    }
+
+    private void searchMatches(String newValue) {
+        Pattern regEx = Pattern.compile(newValue);
+        Matcher matcher = regEx.matcher(txtEditor.getText());
+
+        searchList.clear();
+        while (matcher.find()){
+            searchList.add(new Index(matcher.start(), matcher.end()));
+        }
+
+        for (Index index : searchList){
+            if (index.indexStart > txtEditor.getCaretPosition()){
+                findOffSet = searchList.indexOf(index);
+                break;
+            }
+        }
+
+        if (searchList.isEmpty()){
+            findOffSet = -1;
+        }
+    }
+
+    public static void tooltipStartTiming(Tooltip tooltip) {
+        try {
+            Field fieldBehavior = tooltip.getClass().getDeclaredField("BEHAVIOR");
+            fieldBehavior.setAccessible(true);
+            Object objBehavior = fieldBehavior.get(tooltip);
+
+            Field fieldTimer = objBehavior.getClass().getDeclaredField("activationTimer");
+            fieldTimer.setAccessible(true);
+            Timeline objTimer = (Timeline) fieldTimer.get(objBehavior);
+
+            objTimer.getKeyFrames().clear();
+            objTimer.getKeyFrames().add(new KeyFrame(new Duration(250)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void mnuNew_OnAction(ActionEvent actionEvent) {
@@ -223,9 +261,16 @@ public class EditorFormController {
     }
 
     public void btnReplace_OnAction(ActionEvent actionEvent) {
+        if (findOffSet == -1) return;
+        txtEditor.replaceText(searchList.get(findOffSet).indexStart,searchList.get(findOffSet).indexEnd,txtReplace.getText());
+        searchMatches(txtSearch.getText());
     }
 
     public void btnReplaceAll_OnAction(ActionEvent actionEvent) {
+        while (!searchList.isEmpty()){
+            txtEditor.replaceText(searchList.get(0).indexStart,searchList.get(0).indexEnd,txtReplace.getText());
+            searchMatches(txtSearch.getText());
+        }
     }
 }
 
