@@ -1,18 +1,35 @@
 package controller;
 
+import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.Rectangle2D;
+import javafx.print.PrinterJob;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,10 +57,14 @@ public class EditorFormController {
     private int findOffSet = -1;
     private List<Index> searchList = new ArrayList<>();
     private String address = null;
+    private PrinterJob printerJob;
+    private List<Rectangle> rec = new ArrayList<>();
 //    Tooltip tooltip;
 
     public void initialize(){
         pneFindOrReplace.setVisible(false);
+        this.printerJob = PrinterJob.createPrinterJob();
+
 
         ChangeListener listener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
            searchMatches(newValue);
@@ -61,6 +82,8 @@ public class EditorFormController {
         tooltipStartTiming(tltpFindPrevious);
         tooltipStartTiming(tltpReplaceNext);
         tooltipStartTiming(tltpReplaceAll);
+
+
     }
 
     private void searchMatches(String newValue) {
@@ -82,6 +105,46 @@ public class EditorFormController {
         if (searchList.isEmpty()){
             findOffSet = -1;
         }
+
+        Text text = (Text) txtEditor.lookup("Text");
+        Parent grp = txtEditor.lookup("Text").getParent().getParent();
+        TextAreaSkin skin = (TextAreaSkin) txtEditor.getSkin();
+
+
+        try {
+            Field fldChildren = Parent.class.getDeclaredField("children");
+            fldChildren.setAccessible(true);
+            ObservableList<Node> children = (ObservableList<Node>) fldChildren.get(grp);
+            Node node1 = children.get(0);
+            Node node2 = children.get(1);
+            Node node3 = children.get(2);
+
+            loadDefaultChildren(children,node1,node2,node3);
+
+            rec.clear();
+
+            for (Index index : searchList){
+                double x = skin.getCharacterBounds(index.indexStart).getMinX();
+                double y = skin.getCharacterBounds(index.indexStart).getMinY();
+                double width = skin.getCharacterBounds(index.indexEnd).getMinX()-skin.getCharacterBounds(index.indexStart).getMinX();
+                double height = skin.getCharacterBounds(index.indexEnd).getMaxY()-skin.getCharacterBounds(index.indexStart).getMinY();
+                Rectangle rectangle = new Rectangle(x,y,width,height);
+                rectangle.setFill(Color.rgb(155,125,45,0.25));
+                rec.add(rectangle);
+            }
+
+            children.addAll(rec);
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadDefaultChildren(ObservableList<Node> children,Node... nodes){
+        children.clear();
+       for (Node node : nodes){
+           children.add(node);
+       }
     }
 
     public static void tooltipStartTiming(Tooltip tooltip) {
@@ -110,6 +173,8 @@ public class EditorFormController {
     public void mnuOpen_OnAction(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Text Files","*.txt","*.html"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files","*"));
         File file = fileChooser.showOpenDialog(txtEditor.getScene().getWindow());
 
         if (file == null) return;
@@ -271,6 +336,19 @@ public class EditorFormController {
             txtEditor.replaceText(searchList.get(0).indexStart,searchList.get(0).indexEnd,txtReplace.getText());
             searchMatches(txtSearch.getText());
         }
+    }
+
+    public void mnuPrint_OnAction(ActionEvent actionEvent) {
+        boolean printDialog = printerJob.showPrintDialog(txtEditor.getScene().getWindow());
+        if (printDialog){
+            printerJob.printPage(txtEditor.lookup("Text"));
+        }
+
+        
+    }
+
+    public void mnuPageSetup_OnAction(ActionEvent actionEvent) {
+        printerJob.showPageSetupDialog(txtEditor.getScene().getWindow());
     }
 }
 

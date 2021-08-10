@@ -24,6 +24,9 @@
                   <MenuItem mnemonicParsing="false" onAction="#mnuSave_OnAction" text="Save" />
                   <MenuItem mnemonicParsing="false" onAction="#mnuSaveAs_OnAction" text="Save As" />
                   <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#mnuPrint_OnAction" text="Print" />
+                  <MenuItem mnemonicParsing="false" onAction="#mnuPageSetup_OnAction" text="Page Setup" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#mnuExit_OnAction" text="Exit" />
                </items>
           </Menu>
